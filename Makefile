@@ -1,5 +1,6 @@
 VERSION=$(shell git describe --abbrev=0 --always)
-LDFLAGS = -ldflags "-s -w -X github.com/octoberswimmer/deploylock.Version=${VERSION}"
+LDFLAGS = -ldflags "-X github.com/octoberswimmer/deploylock.Version=${VERSION}"
+GCFLAGS = -gcflags="all=-N -l"
 EXECUTABLE=deploylock-client
 PACKAGE=./cmd/deploylock-client
 WINDOWS=$(EXECUTABLE)-windows-amd64.exe
@@ -14,36 +15,20 @@ default:
 install:
 	go install ${LDFLAGS} ${PACKAGE}
 
-#$(WINDOWS): checkcmd-x86_64-w64-mingw32-gcc checkcmd-x86_64-w64-mingw32-g++
-#	env \
-#		GOOS=windows \
-#		GOARCH=amd64 \
-#		CC=x86_64-w64-mingw32-gcc \
-#		CXX=x86_64-w64-mingw32-g++ \
-#		CGO_ENABLED=1 \
-#		CGO_CFLAGS=-D_WIN32_WINNT=0x0400 \
-#		CGO_CXXFLAGS=-D_WIN32_WINNT=0x0400 \
-#		go build -v -o $(WINDOWS) ${LDFLAGS} ${PACKAGE}
+install-debug:
+	go install ${LDFLAGS} ${GCFLAGS} ${PACKAGE}
 
-$(WINDOWS): checkcmd-xgo
-	xgo -go 1.21 -out $(EXECUTABLE) -dest . ${LDFLAGS} -buildmode default -trimpath -targets windows/amd64 -pkg ${PACKAGE} -x .
+$(WINDOWS):
+	env CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -o $(WINDOWS) ${LDFLAGS} ${PACKAGE}
 
-$(LINUX): checkcmd-x86_64-linux-gnu-gcc checkcmd-x86_64-linux-gnu-g++
-	env \
-		GOOS=linux \
-		GOARCH=amd64 \
-		CC=x86_64-linux-gnu-gcc \
-		CXX=x86_64-linux-gnu-g++ \
-		CGO_ENABLED=1 \
-		go build -v -o $(LINUX) ${LDFLAGS} ${PACKAGE}
+$(LINUX):
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o $(LINUX) ${LDFLAGS} ${PACKAGE}
 
-# Build macOS binaries using docker images that contain SDK
-# See https://github.com/crazy-max/xgo and https://github.com/tpoechtrager/osxcross
-$(OSX_ARM64): checkcmd-xgo
-	xgo -go 1.21 -out $(EXECUTABLE) -dest . ${LDFLAGS} -buildmode default -trimpath -targets darwin/arm64 -pkg ${PACKAGE} -x .
+$(OSX_AMD64):
+	env CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -o $(OSX_AMD64) ${LDFLAGS} ${PACKAGE}
 
-$(OSX_AMD64): checkcmd-xgo
-	xgo -go 1.21 -out $(EXECUTABLE) -dest . ${LDFLAGS} -buildmode default -trimpath -targets darwin/amd64 -pkg ${PACKAGE} -x .
+$(OSX_ARM64):
+	env CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -o $(OSX_ARM64) ${LDFLAGS} ${PACKAGE}
 
 $(basename $(WINDOWS)).zip: $(WINDOWS)
 	zip $@ $<
