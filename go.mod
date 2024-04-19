@@ -40,3 +40,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240419172600-2e49e8677f39

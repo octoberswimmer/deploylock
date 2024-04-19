@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -16,11 +17,61 @@ import (
 )
 
 func init() {
-	RootCmd.Flags().StringP("name", "n", "deploy", "lock name")
+	AcquireCmd.Flags().StringP("name", "n", "deploy", "lock name")
+	RenewCmd.Flags().StringP("name", "n", "deploy", "lock name")
+	RenewCmd.Flags().StringP("lease", "l", "", "lease uuid")
+
+	RenewCmd.MarkFlagRequired("lease")
+
+	RootCmd.AddCommand(AcquireCmd)
+	RootCmd.AddCommand(RenewCmd)
 }
 
 var RootCmd = &cobra.Command{
-	Use:   "deploylock-client <server>",
+	Use: "deploylock-client",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+		os.Exit(1)
+	},
+}
+
+var RenewCmd = &cobra.Command{
+	Use:   "renew --uuid <lease> <server>",
+	Short: "Renew a distributed lock lease for deploying to Salesforce",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		server, err := url.Parse(args[0])
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "could not parse server: %s", err.Error())
+			os.Exit(1)
+		}
+		serverUrl := fmt.Sprintf("%s://%s", server.Scheme, server.Host)
+		lockName, _ := cmd.Flags().GetString("name")
+		uuid, _ := cmd.Flags().GetString("lease")
+		backend := distributed_locker.NewHttpBackend(serverUrl)
+		l := distributed_locker.NewDistributedLocker(backend)
+
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			l.HoldLease(lockName, uuid)
+			fmt.Fprintf(os.Stderr, "HoldLease finished\n")
+		}()
+		defer l.Release(lockgate.LockHandle{UUID: uuid, LockName: lockName})
+		select {
+		case <-cmd.Context().Done():
+			fmt.Fprintf(os.Stderr, cmd.Context().Err().Error())
+			os.Exit(0)
+		case <-done:
+			fmt.Fprintf(os.Stderr, "done channel closed\n")
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "returning from Run\n")
+	},
+}
+
+var AcquireCmd = &cobra.Command{
+	Use:   "acquire <server>",
 	Short: "Get a distributed lock lease for deploying to Salesforce",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -36,12 +87,24 @@ var RootCmd = &cobra.Command{
 
 		acquired, lockHandle, err := l.Acquire(lockName, lockgate.AcquireOptions{
 			OnWaitFunc: func(lockName string, doWait func() error) error {
-				fmt.Printf("WAITING FOR %s\n", lockName)
+				done := make(chan struct{})
+				ticker := time.NewTicker(3 * time.Second)
+				defer ticker.Stop()
+				go func() {
+					for {
+						fmt.Fprintf(os.Stderr, "WAITING FOR %s\n", lockName)
+						select {
+						case <-done:
+						case <-ticker.C:
+						}
+					}
+				}()
+				defer close(done)
 				if err := doWait(); err != nil {
-					fmt.Printf("WAITING FOR %s FAILED: %s\n", lockName, err)
+					fmt.Fprintf(os.Stderr, "WAITING FOR %s FAILED: %s\n", lockName, err)
 					return err
 				} else {
-					fmt.Printf("WAITING FOR %s DONE\n", lockName)
+					fmt.Fprintf(os.Stderr, "WAITING FOR %s DONE\n", lockName)
 				}
 				return nil
 			},
@@ -54,14 +117,7 @@ var RootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("acquired a lock: %#v\n", lockHandle)
-
-		defer l.Release(lockHandle)
-
-		select {
-		case <-cmd.Context().Done():
-			fmt.Fprintf(os.Stderr, cmd.Context().Err().Error())
-		}
+		fmt.Println(lockHandle.UUID)
 	},
 }
 
