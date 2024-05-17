@@ -41,4 +41,4 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240517131824-8aa164a51069
+replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240517203322-da80f6cf36b3
