@@ -1,6 +1,6 @@
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
-github.com/cwarden/lockgate v0.0.0-20240419172600-2e49e8677f39 h1:tGcsPh+xwLh01qqrkQOsaVirZ0vydpGWODICZLqxAiA=
-github.com/cwarden/lockgate v0.0.0-20240419172600-2e49e8677f39/go.mod h1:0yIFSLq9ausy6ejNxF5uUBf/Ib6daMAfXuCaTMZJzIE=
+github.com/cwarden/lockgate v0.0.0-20240517131824-8aa164a51069 h1:C266a1Sz18hWK2u8JIsx4X5qGJT1qZJLLG8gdpI1GfM=
+github.com/cwarden/lockgate v0.0.0-20240517131824-8aa164a51069/go.mod h1:0yIFSLq9ausy6ejNxF5uUBf/Ib6daMAfXuCaTMZJzIE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

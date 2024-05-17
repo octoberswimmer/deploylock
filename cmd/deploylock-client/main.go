@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
@@ -86,6 +87,7 @@ var AcquireCmd = &cobra.Command{
 		l := distributed_locker.NewDistributedLocker(backend)
 
 		acquired, lockHandle, err := l.Acquire(lockName, lockgate.AcquireOptions{
+			AcquirerId: uuid.New().String(),
 			OnWaitFunc: func(lockName string, doWait func() error) error {
 				done := make(chan struct{})
 				ticker := time.NewTicker(3 * time.Second)

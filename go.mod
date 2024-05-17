@@ -3,6 +3,7 @@ module github.com/octoberswimmer/deploylock
 go 1.22.2
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.6.1
 	github.com/werf/lockgate v0.1.1
@@ -14,7 +15,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -41,4 +41,4 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240419172600-2e49e8677f39
+replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240517131824-8aa164a51069
