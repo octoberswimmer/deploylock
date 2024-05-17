@@ -62,7 +62,7 @@ var RenewCmd = &cobra.Command{
 		select {
 		case <-cmd.Context().Done():
 			fmt.Fprintf(os.Stderr, cmd.Context().Err().Error())
-			os.Exit(0)
+			return
 		case <-done:
 			fmt.Fprintf(os.Stderr, "done channel closed\n")
 			os.Exit(1)
