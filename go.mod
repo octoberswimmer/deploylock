@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.6.1
-	github.com/werf/lockgate v0.1.1
+	github.com/werf/lockgate v0.1.2-0.20240704184704-a03017298b88
 )
 
 require (
@@ -40,5 +40,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-replace github.com/werf/lockgate v0.1.1 => github.com/cwarden/lockgate v0.0.0-20240517203322-da80f6cf36b3
