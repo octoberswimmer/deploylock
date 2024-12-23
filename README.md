@@ -17,7 +17,7 @@ acquire the lock are placed in a FIFO queue.
 Upon successfully acquiring the lock, the lock's UUID will be written to stdout
 and `deploylock-client` will exit.
 
-Keep the lock by running `deploylock-client renew -n <lockname -l <uuid>
+Keep the lock by running `deploylock-client renew -n <lockname> -l <uuid>
 https://deploylock-server/`.  This can be placed in the background to run other
 commands that require the lock.  Kill `deploylock-client renew` to release the
 lock.
